@@ -1,0 +1,101 @@
+Para este ejercicio, se asume lo siguiente, el usuario "user1" existe en los dos servidores y en ambos casos las direcciones IP y nombres de host estan mapeados en el archivo /etc/hosts
+
+En este ejercicio usted se conectara a traves de ssh desdee server10 hacia server20
+debera ejecutar los comandos correspondientes en server20 para validacion, posteriormente debera cerrar la sesion y regresar al sistema original.
+----------------------------------------------------------------------------------------------------
+COMPROBACIONES INICIALES
+1.- Verifique que el usuario "user1" exista en los dos servidores
+cat /etc/passwd | grep user1
+
+2.- Verifique que en ambos casos se encuentre mapeada la direccion IP y hostname de server 10 y server 20
+cat /etc/hosts
+
+3.- Verifique la comunicacion a nivel de capa3
+ping server10
+ping server20
+------------------------------------------------------------------------------------------------------
+PROBAR LA CONEXION VIA SSH
+1.- Conectese desde server10 como user1 a traves de ssh en el server20
+ssh -l user1 server20
+ssh user1@server10
+
+2.- Realice el mismo proceso pero ahora coenctese sal server10 desde el server20 como user1
+
+3.- Visualice el coontenido de /root/.ssh/know_host en ambos casos
+
+4.- Elimine el contenido de estre archivo en ambos servidores
+-------------------------------------------------------------------------------------------------------
+
+GENERAR DISTRIBUIR Y UTILIZAR CLAVES SSH
+En este ejercicio usted generara un par de claves con el algoritmo RSA para user1 sobre server10 (RHEL), visualizara el contenido de los archivos de clave publica y privada posteriormente devera distribuir la clave publica hacia el server10 (centOS) y nuevamente intentara autenticarse en server20 desde server10
+
+1.- Inicie sesion en server10 como root
+
+2.- Genere el par de claves RSA sin una contraseña asociada (-N) y sin una saluda detallada (-q) presione enter cuando el promt le indique cual sera la ruta donde se generara la llave
+ssh-keygen -N "" -q
+
+3.- Visualice el contenido de id_rsa
+cat id_rsa
+cat id_rsa.pub
+
+4.- Proceda a copiar el archivo correspondiente a la clave publica de server10 en el siguiente directorio de server 20 /root/.ssh/authorized_keys
+ssh-copy-id server20
+
+5.- Una vez copiado el id en server20, proceda a conectarse por ssh desde server10 hacia server20 observe que el prompt no le debe pedir un password
+ssh server20
+
+6.- Visualice este intento de inicio de sesion en /var/log/secure 
+
+EJECUTAR COMANDOS EN HOST REMOTO
+whoami
+hostname
+nmcli connection status
+-------------------------------------------------------------------------------------------------------
+COPIADO DE ARCHIVOS REMOTAMENTE USANDO SCP
+- Debe revisar que el directorio destino tenga permisos de escritura para todo el mundo
+- Utilice el usuario root para conectarse de forma remota
+
+1.- Ejecute el comando scp
+scp server20:/root/miarchivoServer20.txt /tmp
+
+2.- Verifique que el copiado se realizo correctamente en server20
+ls /tmp
+--------------------------------------------------------------------------------------------------------
+TRANSFERIR ARCHIVOS DE FORMA REMOTA USANDO SFTP
+1.- Conectese desde server10 hacia server20 a traves de sftp
+sftp server20
+
+2.- Digite el signo de interrogacion para ver la ayuda
+?
+
+3.- Proceda a ejecutar los siguiente comandos para el copiado remoto
+mkdir /tmp/dir10-20
+cd /tmp/dir10-20
+pwd
+put /root/pruebasSFTPserver10.txt
+ls
+exit
+--------------------------------------------------------------------------------------------------------
+SINCRONIZACION DE ARCHIVOS REMOTAMENTE USANRO RSYNC
+1.- Instale inicialice y habilite rsync
+yum install rsync
+systemctl --now enable rsyncd
+systemctl status rsyncd
+
+2.- Proceda a copiar el archivo /root/miarchivoServer10.txt al directorio /tmp dentro del mismo servidor
+rsync -av /root/miarchivoServer10.txt /tmp
+en ejecuciones subsecuentes solo se actualizara el contenido modificado
+
+3.- Proceda a copiar miarchivoServer10.txt ubicado en server10 dentro de server20
+rsync -avPz /root/otroarchivoServer10.txt server20:/tmp
+
+4.- Copiar el directorio /home/user1 de ubicado en server20 dentro de /tmp/transfers
+rsync -aPvzr server20:/home/user1 /tmp/transfers
+
+
+
+
+
+
+
+

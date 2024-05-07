@@ -1,0 +1,64 @@
+CONFIGURE UN CLIENTE NTP
+1.- Instale el paquete chrony
+dnf install chrony
+
+2.- Asegurese de que los servidores de tiempo publicos preconfigurados, se encuentren agregados en el archivo de configuracion /etc/chrony.conf
+grep -E 'pool | server' /etc/chrony.conf | grep -v ^#
+
+3.- Inicialice y habilite el servicio chrony
+systemctl --now enable chronyd
+
+4.- Verifique el estatus
+systemctl status chronyd --no-pager
+
+5.- Verifique los servidores a los que se ha unido nuestro host
+chronyc sources
+
+6.- Muestre el rendimiento del reloj
+chronyc tracking
+
+
+
+MIRAR Y ESTABLECDR LA FECHA Y HORA DEL SISTEMA
+1.- Ejecute el comando timedatectl
+
+2.- Este comando necesita que el servicio chronyd este desactivado ejecute el siguiente comando para desactivar chronyd
+timedatectl set-ntp false
+
+3.- Modifique la fecha actual y confirme
+timedatectl set-time 2022-07-23
+timedatectl
+
+4.- Modifique la fecha y hora como se muestra a continuacion
+timedatectl set-time "2022-07-23 21:24"
+
+5.- Active de nuevo el servicio ntp
+timedatectl set-ntp true
+
+6.- Para mirar la fecha del sistema utilice el comando date
+date
+
+7.- Otra forma de cambiar la fecha y hora del sistema
+date --set "2022-07-24 23:26"
+
+
+
+
+8.- Utilice el comando dig para llevar a cabo la resolucion de nombres
+dnf install bind-utils
+dig redhat.com
+dig -x 34.235.198.240
+
+9.- Utilice el comando host para resolucion de nombres
+host redhat.com
+host -v 34.235.198.240
+
+10.- Utilice el comando nslookup para resolucion de nombres a traves del servidor de google en lugar del servidor asignado en /etc/resolv.conf
+nsloockup redhat.com 8.8.8.8
+nslookup 34.235.198.240
+
+11.- Utilice el comando getent y la base de datos hosts para resolver nombres de dominio
+getent hosts redhat.com
+getent hosts 34.235.198.240 
+	
+

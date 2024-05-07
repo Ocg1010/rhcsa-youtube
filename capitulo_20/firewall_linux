@@ -1,0 +1,68 @@
+AGREGAR SERVICIOS Y PUERTOS Y GESTIONAR ZONAS
+En este ejercicio usted va a determinar cual es la zona activa actual, va a agregar y activar una regla de forma permanente para permitir el trafico HTTP sobre el puerto 80 y tambien agregara una regla para aceptar trafico destinado al puerto 443 (HTTPS) agregue una regla permanente para la zona interna que aplique al rango de puertos 5901 - 5910 
+Por ultimo debe confirmar los cambios y revisar el contenido de las zonas afectadas y cambie la zona por defecto para que sea la internal zone y activela.
+
+1.- Determine el nombre de la zona actual por defecto
+firewall-cmd --get-default-zone
+
+2.- Agregue una regla permanente para permitir el trafico HTTP en el puerto por defecto 
+firewall-cmd --permanent --add-service=http
+
+3.- Active la nueva regla
+firewall-cmd --reload
+
+4.- Confirme la activacion de la nueva regla
+firewall-cmd --list-services
+
+5.- Muestre el contenido del archivo de la zona por defecto para validar la nueva regla
+cat /tc/firewalld/zones/public.xml
+
+6.- Agregue una regla en tiempo de ejecucion para permitir el trafico 443 (no tiene permanent)
+firewall-cmd --add-port=443/tcp
+firewall-cmd --list-ports
+
+7.- Agregue una regla permanente en la zona interna para el rango de puertos tcp 5901-5910
+firewall-cmd --add-port 5901-5910/tcp --permanent --zone internal
+
+8.-Muestre el contenido del archivo de la  zona interna para validar
+cat /etc/firewalld/zones/internal.xml
+
+firewall-cmd realiza una copia de seguridad de las zonas afectadas con la extension .old para futuras actualizaciones
+
+9.- Cambie la zona por defecto a la zona interna y confirme
+firewall-cmd --set-default-zone internal
+firewall-cmd --get-default-zone
+
+10.- Active las reglas definidas en la zona interna y aliste el rango de puertos agregado 
+firewall-cmd --reload
+firewall-cmd --list-ports
+---------------------------------------------------------------------------------------------------------
+
+REMOVER SERVICIOS Y PUERTOS GESTIONAR ZONAS
+1.- Remueva la regla permanente para el servicio http en la public zone
+firewall-cmd --remove-service=http --zone-public --permanent
+
+2.- Remueva la regla permanente para los puertos 5901-5910 en la zona interna
+firewall-cmd --remove-port 5901-5910/tcp --permanent
+
+3.- Cambie para que la zona por defecto sea la public y valide
+firewall-cmd --set-default-zone=public
+firewall-cmd --get-default-zone
+
+4.- Active las reglas de la zona publica y liste los servicios disponibles
+firewall-cmd --reload
+firewall-cmd --list-services
+---------------------------------------------------------------------------------------------------------
+
+PROBAR EL EFECTO DE UNA REGLA DE FIREWALL
+1.- Elimine la regla de acceso al servicio ssh en el server10
+firewall-cmd --remove-service=ssh
+
+2.- Intente conectarse por ssh al server10
+ssh server10
+
+3.- Vuelva a gregar la reglla
+firewall-cmd add-service=ssh --permanent
+
+4.- Intente conectarse otra vez
+ssh server10

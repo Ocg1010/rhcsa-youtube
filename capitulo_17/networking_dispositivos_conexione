@@ -1,0 +1,75 @@
+COMO CONSULTAR EL HOSTNAME DEL EQUIPO
+hostname ; hostnamectl --static ; uname -n nmcli general hostname
+1.- Proceda a cambiar el hostname del sistema
+vim /etc/hostname
+server10.example.com
+systemctl restart systemd-hostnamed
+hostname
+
+
+
+
+DIRECCION IP
+1.- Ejecute el comando siguiente
+ip addr
+
+2.- Modifique la configuracion de la tarjeta de red
+cd /etc/sysconfig/network-script
+
+3.- Reinicie el servicio network-manager
+systemctl restart NetworkManager
+
+
+
+
+HERRAMIENTA nmcli
+1.- Mostrar todas las interfaces de red disponibles incluidas las que estan desactivadas
+nmcli connection status
+
+2.- Desacticvar la conexion de red
+nmcli connection down ens160
+
+3.- Volver a activar una conexion 
+nmcli c up sns160
+
+4.- Mirar el estatus de todas las interfaces de red disponibles
+nmcli device status
+
+
+
+
+AGREGAR UNA NUEVA CONEXION DE RED CON nmcli
+1.- Agregar una segunda tarjeta de red a la maquina virtual
+
+2.- Verifique el estatus del servicio networkmanager
+systemctl status NetworkManager
+
+3.- Veirifique la existencia de la segunda tarjeta de red, y verifique si la nueva tarjeta de red tiene un perfil de conexion asociado
+nmcli device status | grep ens
+
+4.- Agregue un perfil de conexion y asocielo a la nueva interface
+nmcli connection add type Ethernet ifname ens224 con-name ens224 ipv4 192.168.100.185/24 gw4 192.168.1 
+
+5.- Confirme la nueva conexion 
+nmcli connection status
+
+6.- La herramienta nmcli debe crear un nuevo archivo en /etc/sysconfig/network-scripts para asociar la nueva conexion con su archivo de configuracion verifique con el comando cat
+cat /etc/sysconfi/netwoek-scripts/ifcfg-ens224
+ip a
+
+7.- Desactive la conexion para desvincular el dispositivo
+nmcli connection down ens224
+
+8.- Vuelva a activar la conexion 
+nmcli c up ens224
+
+
+
+
+AGREGAR ENTRADAS EN LA TABLA DE HOST
+1.- Abre el archivo /etc/hosts y agregue las siguientes entradas en el servidor 10
+192.168.100.149 server10.example.com server10
+192.168.100.184 server20.example.com server20
+
+
+

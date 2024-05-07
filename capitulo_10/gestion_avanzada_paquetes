@@ -1,0 +1,209 @@
+CONFIGURAR EL ACCESO A UN REPOSITORIO ISO PRECONSTRUIDO ACCESO A LOS 2 REPOSITORIOS ISO DISPONIBLES EN LA RHEL8
+
+1.- Verifique que la imagen iso se encuentre debidamente montada
+sudo df -h | grep mnt
+
+2.- Proceda a crear un archivo llamado local.repo y guardelo en /etc/yum.respos.d y agregue los siguientes datos para los dos repositorios
+
+[BaseOS]
+name=BaseOs
+baseurl=file://mnt/BaseOS
+gpgcheck=0
+
+[[AppStream]
+name=AppStream
+baseurl=file://mnt/AppStream
+gpgcheck=0
+
+3.- Confirme el aceeso a los repositorios
+sudo dnf repolist
+
+4.- Listar todos los paquetes disponibles para instalacion en los 2 repositorios que tenemos habilitados y disponibles
+sudo dnf repoquery | less
+
+5.- Listar solaemnte los paquetes disponibles para un determinado repositorio
+sudo dnf repoquery --repo "BaseOs"
+
+6.- Utilice grep para hacer una lista mas selectiva solamente con aquellos paquetes que se refieran a zsh
+sudo dnf repoquery --repo BaseOs | grep zsh
+
+7.- Procesa a listar todos los paquetes que han sido instalados en el sistema si el paquete esta precesido por un @ significa que le paquete esta instalado
+sudo dnf list installed
+
+8.- Proceda a listar todos los paquetes disponibles para actualizacion desde todos los repositorios habilitados
+sudo dnf list updates
+
+9.- Para listar si un paquete determinado por ejemplo el zip esta instalado o bien disponible para instalacion a traves de cualquier repo habilitado
+sudo dnf list zip
+sudo dnf list CUnit
+
+10.- Para listar todos los paquetes instalados cuyo nombre comience con la cadena de texto gnome
+sudo dnf list installed gnome*
+
+
+
+
+INSTALAR Y ACTUALIZAR PAQUETES
+1.- Procesa a instalar o en su caso actualizar un paquete denominado ypbind
+sudo dnf install ypbind
+
+2.- Actualizar  o instalar un paquete denominado dcraw ubicado en el siguiente directorio
+/mnt/AppStream/Packages
+sudo dnf localinstall /mnt/AppStream/Packages/dcraw-9.27.0-9.el8.x86_64.rpm
+(El paquete esta disponible)
+
+3.- Actualizar un paquete ya instalado por ejemplo autofs a la version mas reciente disponible, el comando fallara si el programa todavia no esta instalado
+sudo dnf update autofs*
+
+4.- Para actualizar todos los paquetes instalados a la version mas reciente disponible
+sudo dnf update
+
+
+
+
+REMOVER PAQUETES
+
+1.- Remover el paquete llamado ypbind
+sudo dnf remove ypbind
+
+
+
+MANIPULAR PAQUETES INDIVIDUALES
+1.- Verifique si el paquete cifs-utils ya esta instalado
+sudo dnf list installed | cifs-utils
+
+2.- Determine si el paquete cifs-utils esta disponible para instalacion
+sudo dnf repoquery cifs-utils
+3.- Mostrar la informacion detallada sobre el paquete cifs-utils
+sudo dnf info cifs-utils
+
+4.- Instale el paquete cifs-utils
+sudo dnf install cifs-utils
+
+5.- Consulte la informacion sobre el paquete otra vez
+sudo dnf info cifs-utils
+
+6.- Elimine el paquete
+sudo dnf remove cifs-utils
+
+7.- Confirme la remocion del paquete
+sudo dnf list cifs-utils
+
+
+
+
+DETERMINE EL PROVEDOR Y BUSQUE METADATOS ACERCA DEL PAQUETE
+1.- Para buscar por aquellos paquetes que contengan un archivo especifico como /etc/passwd utilice el subcomando provides o whatprovides del comando dnf
+sudo dnf provides /etc/passwd
+
+2.- El comando whatprovides permite utilizar comodines para expandir el nombre del archivo
+sudo dnf wahtprovides /usr/bin/system-config*
+
+3.- Para buscar todos los paquetes que coincidan con una cadena en el campo name o sumary
+sudo dnf search system-config
+
+
+GESTION DE GRUPOS DE PAQUETES
+
+1.- Listar grupos de paquetes disponibles e instalados en el sistema
+sudo dnf group list
+
+2.- Para listar la cantidad de grupos de paquetes instalados y grupos de paquetes disponibles para instalacion
+sudo dnf groyp summary
+
+3.- Para listar todos los grupos de paquetes instalados y disponibles en el sistema incluyendo aquellos que se encuentran ocultos
+sudo dnf groyp list hidden
+
+4.- Para listar todos los grupos de paquetes que pertenecen a un grupo en especifico por ejemplo el grupo Base
+sudo dnf group info Base
+
+
+
+
+INSTALAR Y ACTUALIZAR GRUPOS DE PAQUETES
+1.- Proceda a consultar si el grupo de paquetes denominado smart card support se encuentra instalado o bien esta disponible para instalacion
+sudo dnf group list avaivle "smart card support"
+sudo dnf group info "smart card support"
+
+2.- Proceda con la instalacion del grupo de paquetes
+sudo dnf groupinstall "smart card support"
+
+3.- Para actualizar el paquete a su mas reciente version
+sudo dnf groupupdate "smart card support"
+sudo dnf group list installed
+
+
+
+DESINSTALAR GRUPOS DE PAQUETES
+1.- Eliminar el grupo de paquetes smart card support
+sudo dnf group remove 'smart card suppot'
+
+2.- Confirme la remocion del grupo de paquetes
+sudo dnf group list installed
+
+
+
+GESTION DE MODULOS
+1.- Listar los modulos disponibles e instalados
+sudo dnf module list
+sudo dnf module list --repo AppStream
+
+2.- Mostrar todos los streams de un modulo espcecifico y ver su estatus
+sudo dnf module list perl
+
+3.- Listar solo un stream especifico
+sudo dnf module list perl:5.24
+
+4.- Listar todos los moduleStreams habilitados instalados y deshabilitados
+sudo dnf module list --enabled
+sudo dnf module list --installed
+sudo dnf module list --disabled
+
+
+GESTIONAR MODULOS
+1.- Verifique si el modulo postgresql ya esta instalado
+sudo dnf module list postgresql
+
+2.- Muestre la informacion realcionada con el stream por defecto del modulo postgresql
+sudo dnf module info postgresql:10
+
+3.- Instale el modulo postgresql con el profile por defecto para el stream 10
+sudo dnf module install --profile postgresql:10
+
+4.- Muestre la informacion del modulo otra vez
+sudo dnf module info postgresql:10
+
+5.- Elimine el moduleProfile por defecto del paquete postgresql para el perfil 10
+sudo dnf module remove postgresql:10
+
+6.- Confirme la remocion del moduleProfile
+sudo dnf module info postgresql:10
+
+
+
+CAMBIAR UN MODULE STREAM
+1.- Procesa a cambiar la version de un modulo perl por una version mas antigua para ello verifique el estado actual de todos los streams de perl
+sudo dnf module list perl
+
+2.- Proceda a remover el moduleProfile perl 5.26
+sudo dnf module remove perl
+
+3.- Confirme que el moduleProfile perl 5.26 se removio correctamente
+sudo dnf module list perl
+
+4.- Deshabilite el modulo de tal forma que ningun stream este habilitado o deshabilitado
+sudo dnf module reset perl
+sudo dnf list perl
+
+5.- Instale el profile minimal para el stream perl 5.24, el cual no es el profile por defecto
+sudo dnf module install perl 5.24/minimal --allowerasing
+El comando actuara en esta secuencia
+1.- Resolucion de dependencias
+2.- Listar los paquetes que seran actualizados
+3.- Indicar el module y profile que seran instalados
+4.- Indicar el stream (5.24) que sera habilitado
+5.- Un resumen de la transaccion completa con la cantidad de paquetes que seran manipulados
+6.- Ejecucion de la transaccion completa
+
+6.- Verifique que la desactualizacion del modulo se haya completado y que actualmente se encuentre instalada uan version mas antigua del modulo perl
+sudo dnf module list perl

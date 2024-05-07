@@ -1,0 +1,140 @@
+CREAR UN PHYSICAL VOLUME Y UN VOLUME GROUP
+En este ejercicio utiizara 1 particion sdc1 de 90MB y un disco ssd de 250MB para crear un LVM creara un Volume Group de nombre vbook y agregara los 2 physical volumes utilizara un Physical Extend de 16MB, listara y mostrara el Volume Group y los physical volumes
+
+1.- Crear una nueva particion primaria en el disco sdc de 90MB con la etiqueta ms-dos 
+parted /de/sdc mklabel  msdos
+parted /dev/sdc mkpart primary 1 91m
+parted /dev/sdc print
+
+2.- Establecer la bandera lvm sobre la particion utilizando la herramienta parted
+parted /dev/sdc mklabel lvm
+parted /dec/sdc set 1 lvm on
+parted /dev/sdc print
+
+3.- Inicializar la particion dc1 y el disco sdd para que funcionen como LVM con esto ya tienen pyshical volumes disponibles para utilizar
+pvcreate /dev/sdc1 /dev/sdd -v 
+
+4.- Crear un volume group de nombre vgbook utilice el comando vgcreate y agregue los dos physical volume a este grupo utilice de la opcion -s para establecer el tamaño en MB (en este ejemplo 16MB)
+
+5.- Listar la informacion del volume group
+vgs vgbook
+
+6.- Desplegar la informacion detallada sobre el volume group y sobre los physical volumes que este contiene vgdisplay -v vgbook
+ 
+ 7.- Mostrar la informacion de los pyshical volume
+ pvs
+
+ 8.- Mostrar la infomacion detallada sobre los pyshical volumes
+ pvdisplay /dev/sdc1
+ pvdisplay /dev/sdd
+
+
+
+ CREAR LOGICAL VOLUMES
+ En este ejrcicio creara dos Logical Volumes lvo10 y lvbook1 en el volume group denominado vgbook, utilizara 120MB para lvo10 y 192MB para lvbook1, tomados desde el espacio diponible en el pool, mostrara los detalles del volume group y de los logical volumes
+
+ 1.- Crear el logical volume con el nombre por defecto lvol0 lvcreate y -L para indicar el tamaño 120MB
+ lvcreate -vL 120MB vgbook
+
+ 2.- Crear el logical volume lvbok1 de tamaño 192MB exprese el tamaño en cantidad de Physical Extends, (-l) partiendo de que cada PE pesa 16MB usted requiere 12 de estos para completar el logica volume de tamaño 192MB (-n) establece un nombre personalizado.
+ lvcreate -l 12 -n lvbook1 vgbook
+
+ 3.- Listar la informacion del Logical Volume
+ lvs
+
+ 4.- Mostrar la informacion detallada del volome group incluyendo los logical volumes y los phyisical volumes
+ vgdisplay -v vgbook
+
+ 5.- Ejecute los siguientes para mirar solo los detales de los logical volumes
+ lvdisplay /dev/vgbook/lvol0
+ lvdisplay /dev/vgbook/lvbook1
+
+
+ EXTENDER UN VOLUME GROUP Y UN LOGICAL VOLUME
+ En este jercicio agregara otra particion sdc2 de tamaño 158MB al vgbook para incrementar la cantidad de espacio asignado, primero debe inicializar la particion antes de agregarla al volume group, con ello se incrementara el tamaño de lvbook1 a 336MB tambien mostrara la informacion basica de los phyisical volomes group y logica volume
+
+ 1.- Crear una particion primaria de 158MB en sdc y establezca la bandera lvm ultiice parted y confirme el numero de particion, el tamaño y la bandera lvm
+ parted /dev/sdc mkpart primary 92 250
+ parted /dev/sdc set2 lvm on
+ parted /dev/sdc print
+
+ 2.- Crear el physical volueme sobre /dev/sdc2
+ pvcreate /dev/sdc2
+
+ 3.- Extender el volume group vgnook agregano el nuevo physical volume de sdc2
+ vgextend vgbook /dev/sdc2
+ 
+ 4.- Liste el volume group
+vgs
+
+5.- Extender el volume lvbook1 a 340MB agregado los 144MB que quedan disponibles lvextend -L +144 /dev/vgbook/lvbook1
+
+6.- Mostrar informacion detallada sobre el volume group vgbook
+vgdisplay -v vgbook
+
+7.- Mirar un resumen de los physical volumes
+pvs
+
+8.- Mirar un resumen de los logical volumes
+lvs
+
+
+
+RENOMBRAR, RECDUCIR, EXTENDER Y REMOVER LOGICAL VOLUMES
+En este ejercicio usted renombrara el logical volume lvol0 por lvbook2, reducira el tamaño de lvbook2 a 50MB, comando lvreduce, posteriormente, agregara 32MB con elcomando lvresize acto seguido, removera los 2 logical volumes y mostrara el resumen para los volueme groups logical volumes y physical volumes
+
+1.- Renombrar el logical volume lvol0 por lvbook2 y confirme
+lvrename vgbook lvol0 lvbook2
+lvs
+
+2.- Reducir el tamaño de lvbook2 a 50MB
+lvreduce -L 50 /dev/vgbook/lvbook2
+
+3.- Agregar a 32MB a lvbook2
+lvresize -l +32 /dev/vgbook/lvbook2
+
+4.- Utilice los comandos pvs, lvs,vgs y vgdisplay para mostrar un resumen
+pvs lvs vgs vgdisplay
+
+5.- Elimine los 2 logical volumes lvbook1 t lvbook2, utilice la opcion -f parar forzar el borrado sin que pida confirmacion
+
+lvremove /dev/vgbook/lvbook1 -f
+lvremove /dev/vgbook/lvbook2 -f
+
+
+6.- Ejecutar el siguiente comando para mirar la cantidad de logical volumes que existen actualmente
+
+vgdisplay vgbook | grep 'Cur LV'
+
+
+
+
+REDUCIR Y REMOVER UN VOLUME GROUP
+En este ejercicio usted reducira el tamaño del volume group vgbook, para lo cual debe eliminar los 2 physical volume sdc1 y sdd, posteriormente podra eliminar  el volume groyp por ultimo debera verificar todos los cambios
+
+1.- Remover los physical volume sdc1 y sde del volume group comando vgreduce
+vgreduce vgbook /dev/sdc1 /dev/sdd
+
+2.- Remover el volume group utilizando el comando vgremove
+vgremove vgbook
+
+3.- Confirme con los comandos vgs y lvs
+
+
+
+DESINICIALIZAR LOS PHYSYCAL VOLUMES
+Va a desinicializar los 3 phyisical volumes (sdc1, sdc2 y sdd) eliminando la informacion estructural del LVM, elimine todas las particiones del disco sdc para que todos los discos regresen a su estado original
+
+1.- Eliminar las estructuras LVM de sdc1, sdc2 y sdd
+preremove /dev/sdc1 /dev/sdc2 /dev/sdd
+
+2.- Confirmar los cambios con el comando pvs
+
+3.- Eliminar las particiones del disco sdc con la herramienta parted 
+parted /dev/sdc rm1 ; parted /dev/sdc rm2
+
+4.- Verifique que todos los discos hayan regresado a su estado original
+lsblk
+
+
+

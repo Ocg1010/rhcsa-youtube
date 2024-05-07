@@ -1,0 +1,84 @@
+HERRAMIENTA STRATIS
+1.- Instale los paquetes de stratis
+dnf install stratisd strats-cli
+
+2.- Inice y habilite el servicio
+systemctl enable --now stratisd
+
+3.- Verifique el estatus
+systemctl status stratisd
+
+
+
+
+
+
+
+
+
+CREAR Y CONFIRMAR UN POOL Y UN FILESYSTEM
+En este ejercicio usted creara un pool en la herramienta stratis y creara un sistema de archivos dentro del pool, despues mostrara la informacion acerca del pool, del sistema de archivos y del dispositivo a usar.
+
+1.- Utilizar los discos sde y sdf de 1GB de capacidad cada uno stratis pool create bookpool /dev/sde
+
+2.- Liste la informacion del pool
+stratis pool list
+
+3.- Muestre el dispositivo de bloque que se utilizo para crear el pool
+stratis blockdev list bookpool
+
+4.- Genere un sistema de archivos denominado bookds en el bookpool y Verifique su creacion
+stratis filesystem create bookpool bookfs
+stratis filesystem list
+
+5.- Genere un nuevo directorio denominado /bookfs1 y monte el sistema de archivos en el
+mkdir /bookfs1
+mount /dev/stratis/bookpool/bookfs /bookfs1
+
+6.- Verifique la cantidad en uso del pool
+stratis pool list
+
+
+
+
+
+
+
+EXPANDIR Y RENOMBRAR UN POOL Y UN SISTEMA DE ARCHIVOS
+1.- Expanda el bookpool agregando el disco sdf en el
+
+2.- Verifique ela nueva capacidad del pool
+stratis pool list
+
+3.- Cambie el nombre de bookpool por rhcspool
+stratis pool rename bookpool rhcsapool
+
+4.- Cambie el nombre del sistema de archivos de bookfs por rhcsafs
+stratis filesystem rename rhcsapool bookfs rhcsafs
+stratis filesystem list
+
+
+
+
+
+
+
+
+DESTRUYA UN FILESYSTEM Y UN POOL
+1.- Desmonte el sistema de archivos rhcsafs1 del punto de montaje /bookfs1
+umount /bookfs1
+
+
+2.- Elimine el sistema de archivos rhcsafs del pool
+stratis filesystem destroy rhcsapool rhcsafs
+
+3.- Elimine el pool rhcsapool del sistema
+stratis pool destroy rhcsapool
+
+4.- Confirme que se ha borrado el sistema de archivos y el pool
+stratis filesystem list
+stratis pool list
+
+5.- Veirfique que los discos sde y sdf han regresado a su estado original
+lsblk /dev/sde
+lsblk /dev/sdf

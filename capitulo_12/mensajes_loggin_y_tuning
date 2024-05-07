@@ -1,0 +1,115 @@
+SERVICIO DE LOGGIN
+1.- Listar todos los arvhivos de log disponibles en el sistema
+ls -l /var/log
+
+2.- Enviar un mensaje a los usuarios conectados del servidor.
+logger -i "el sistema sera reiniciado por angel $USER"
+
+3.- Verifique que el log que se genero con el envio de mensaje a varios usuarios
+tail -l /var/log/messages
+
+4.- Verificar si el archivo de configuracion /etc/rsyslog.conf tiene algun error 
+rsyslogd -N 1
+
+5.- Listar el contenido de /var/log
+ls -l /var/log
+
+6.- Revisar los archivos de configuracion para la rotacion de logs 
+vim /etc/cron.daily/logrotate
+vim /etc/logrotate.conf
+ls /etc/logrotate.d
+
+7.- Revisar el archivo de logs correspondientes al arranque del sistema boot
+head /var/log/boot.log
+
+8.- Revisar el archivo de logs de actividades del sistema
+tail -f /var/log/messages 
+
+
+
+
+
+
+
+SYSTEMD JORUNAL
+1.- Ejecute el comando journalctl para mirar todos los logs generados a partir del ultimo reinicio del sistema
+journalctl
+
+2.- Generar un reporte de logs donde la salida sea detallada
+journalctl -o verbose
+
+3.- Mirar todos los eventos generados desde el ultimo reinicio del sistema
+journalctl -b
+
+4.- Mirar todos los eventos generados desde los ultimos dos reinicios del sistema
+journalctl -kb2
+
+5.- Limitar la cantidad de registros mostrados en la salida a solo 3
+jorunalctl -n3
+
+6.- Mostrar todas las alertas generadas por un servicio particular ejemplo crond
+journalctl /usr/sbin/crond
+witch crond (para encontrar una ruta de un binario)
+
+7.- Recuperar todos los mensajes de log generados por un evento que este asociado con un PID que pertenezca al servicio chronyd
+journalctl _PID=$(pgrep chronyd)
+
+8.- Mostrar todos los mensajes de log generados por un system unit en particular ejemplo sshd.service
+journalctl _SYSTSEM_UNIT=sshd.service
+
+9.- Mostrar todos los mensajes de error generados en un determinado rango de fechas por ejemplo 
+journalctl --since 2022-06-01 --until 2022-06-20 -p err
+
+10.- Obttener todos los mensajes de advertencia (warnings) generados en el dia de hoy y mostrarlos en orden cronologico a la inversa (el ultimo se muestra primero)
+journalctl --since today -p warning -r
+yesterday, today, tomorrow
+
+11.- Mirar los logs en tiempo real
+journalctl -f
+
+
+
+
+
+
+
+PRESERVAR LA INFORMACION DEL JOURNALCTL
+1.- Crear el directorio /var/log/journal para que los directorios de journalctl se guarden de forma persistente
+mkdir /var/log/journal
+
+
+
+
+
+SYSTEM TUNING
+1.- Listar los perfiles predfinidos
+ls -l /usr/lib/tuned
+
+2.-Instalar los paquetes de la aplicacion tuned
+dnf install tuned
+
+3.- Arranque el servicio tuned y establezca el autoarranque con cada reinicio 
+sudo systemctl --now enable tuned
+
+4.- Verifique el estatus 
+systemctl status tuned
+
+5.-Despliegei la lista de perfiles de tuning disponibles para ver los 9 perfiles disponibles asi como el perfil actual
+tuned-adm list
+
+6.- Cambie al perfil powersave y confirme que esta activo 
+tunes-adm profile powersave
+tunes-adm active
+
+7.- Determine cual es el perfil recomendado para su servidor y proceda a realizar el cambio
+tuned-adm recommend
+tuned-adm profile virtual-guest
+tuned-adm active
+
+8.- Apague el tuning 
+tuned-adm off
+tuned-adm active
+
+9.- Vuelva a activar el tunning y confirme
+tuned-adm profile virtual-guest
+tunes-adm active

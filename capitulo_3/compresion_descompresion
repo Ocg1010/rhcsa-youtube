@@ -1,0 +1,40 @@
+# COMPRIMIR Y DESCOMPRIMIR GZIP
+gzip -v video1.mp4
+gunzip -v vide1.mp4
+
+# CAMBIAR EL SUBFIJO OPCION --suffix -S (CAMBIA LA EXTENSION) 
+gzip -S .zip video1.mp4
+
+# DESCOMPRIMIR 
+gunzip -v vide1.mp4
+# ESTO FALLA PORQUE NO RECONOCE LA EXTENSION
+mv video1.mp4.zip video1.mp4.gz # LO DEBEMOS REGRSAR A SU ESTADO ORIGINAL (GZ)
+
+# COMPRIMIR PERO CONSERVAR EL ARCHIVO ORIGINAL
+gzip --keep --versobe video1.mp4
+
+
+# COMPRIMIR UN DIRECTORIO DE MANERA RECURSIVA (SOLO FUNCIONA SI EL DRECTORIO TIENE SUBDIRECTORIOS DENTRO)
+opcion --recursive -r
+gzip -rv practica4
+gunzip -rv practica
+
+# COMPRIMIR DIRECTORIO DE MANERA RECIRSOVA CONSERVANDO LOS ORIGINALES 
+gzip --keep -recursive practica4
+gzip -k -r practica4
+
+# PRESERVAR EL NOMBRE Y EL TIMESTAP AL DESCOMPRIMIR DESPUES DE UN COPIADO REMOTO
+scp /root/Documentos/practica4/video2.mp4.gz 192.168.100.171:/root/descomprimidos/video2.mp4.gzip 
+# DESCOMPRIMIMOS CON LAS OPCIONES ADECUADAS
+gunzip -n vide2.mp4.gz (NO PRESERVA ELTIMESTAMP)
+gunzip -N vide2.mp4.gz (SI PRESERVA EL TIMESTAMP) 
+
+# COMPRESION MAS PEQUEÑA PERO LENTA Y MAS GRANDE PERO RAPIDA
+opciones -9 / --best --> lenta pero mas pequeña
+opciones -1 / --fast --> rapida pero mas pesada
+gzip --best --verbose video3.mp4
+gzip --fast --verbose video3.mp4
+
+# COMPROBAR LA INTEGRIDAD DEL ARCHIVO COMPRIMIDO
+gzip -tv video3.mp4.gz
+gzip --test --verbose video3.mp4.gz

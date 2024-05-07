@@ -1,0 +1,50 @@
+# CREAR UN ARCHIVO COMPRIMIDO
+tar -cvf ejemplo.tat directorios.png RHCSA.pdf (AQUI SI IMPORTA EL ORDEN DE LAS OPCIONES)
+tar --create --file=ejemplo.tar --verbose directorios.png RHCSA.pdf
+tar --create directorios.png RHCSA.pdf --file=ejemplo.tar --verbose (TAMBIEN ES VALIDO ESTO)
+
+# LISTAR EL CONTENIDO DE LOS ARCHIVOS TAR
+tar --list --file=ejemplo.tar
+tar --list --verbose --file=ejemplo.tar
+tar -tf ejemplo.tar (AQUI SI IMPORTA EL ORDEN DE LA OPCIONES)
+
+# BUSCAR SI DENTRO DE UN ARCHIVO TAR EXISTE UN ARCHIVO EN PARTICULAR
+tar --list --verbose --file=ejemplo.tar comprimido.zip
+tar -tvf ejemplo.tar comprimido.zip 
+
+# EXCLUIR UN MIEMBRO QUE NO QUEREMOS EMPAQUETAR
+--exclude=PATRON
+tar --exclude="*.pdf" --create --file=ejemplo.tar * --verbose
+tar --exclude="*.pdf" -cfv ejemplo.tar
+
+# AÑADIR UN MIEMBRO DE CUALQUIER TIPO SOBRE UN ARCHIVO TAR YA CREADO
+opcion --apend / -r
+tar --apend --file=ejemplo.tar RHCSA.pdf
+
+# EXTRAER UN ARCHIVO
+tar --extract --verbose --file=nombres.tar
+tar -xvf ejemplo.tar
+
+# INDICAR UN ARCHIVO ESPECIFICO QUE NO DESEEMOS EXTRAER SOLO FUNCIONA SI EL ARCHIVO TAR TIENE DIRECTORIOS ADENTRO, CADA DIRECTORIO ESTA SOCIADO CON UN NUMERO DE COMPONENTE (ESTO SOLO EXTRAE EL ARCHIVO QUE ESTA EN LA SIGUINTE CARPETA OSEA EL NIVEL 1)
+tar --extract --file=nombrs.tar --strip-components=1
+
+# CONCATENAR UN ARCHIVO TAR CON OTRO ARCHIVO TAR (SOLO SE PUEDE UN ARCHIVO A LA VEZ)
+tar --concatenate --file=ejemplo.tar nombres.tar
+
+# BORRAR UN MIEMBRO DE UN ARCHIVO TAR YA CREADO (NO CUENTA CON OPCION CORTA)
+opcion --delete
+tar --delete --verbose --file-ejemplo.tar archivo
+
+# PEDIR CONFIRMACION PARA CADA ACCION (SI LE DAS ENTER ASUME QUE ES UN NO, DEBES PONER LA LETRA y PARA INDICAR QUE DESEAS EXTRAER)
+opcion --interactive
+opcion --confirmation
+tar --interactive --extract --file=ejemplo.tar
+
+# EXTRAER UN ARCHIVO TAR EN OTRO DIRECTORIO (ESTE COMANDO NO ACEPTRA interactive o confirmation)
+tar --extract --file=ejemplo.tar -C extraidos
+
+# COMPARAR DIFERENCIA DE CONTENIDO ENTRE ARCHIVOS DEL SISTEMA DE ARCHIVOS Y ARCHIVOS TAR
+opcion --compare
+opcion --diff
+tar --compare --file=ejemplo.tar ARCHIVO
+tar --diff --file=ejemplo.tar ARCHIVO

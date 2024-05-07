@@ -1,0 +1,118 @@
+PROBAR LAS OPCIONES DEL COMANDO RPM
+1.- Monte la imagen iso del RHEL 8
+mount -o ro /dev/sr0 /mtn
+
+2.- Verifique que se haya montado la unidad
+df - h | grep mnt
+
+CONSULTAR PAQUETES
+1.- Consultar todos los paquetes 
+rpm -qa
+
+2.- Consultar si un paquete en especifico esta instalado 
+rpm -q perl
+
+3.- Listar todos lo que conforman un paquete 
+rpm -ql iproute
+
+4.- Listar solamente los archivos de documentacion en un paquete 
+rpm -qd audit
+ 
+5.- Listar solamente los archivos de configuracion en un paquete 
+rpm -qc cups
+
+6.- Identificar a cual paquete pertenece un archivo especificado
+rpm -qf /etc/passwd
+
+7.- Consultar la informacion disponible referente a un paquete
+rpm -qi setup
+
+8.- Listar todos los archivos y dependencias de un paquete determinado
+rpm -qR chrony
+
+9.- Consultar los metadatos de un paquete
+rpm -qip /mnt/BaseOs/Packages/zsh-5.5.1-6.el8_1.2.x86_64.rpm
+
+10.- Determinar cuales paquetes requieren de un paquete determinado para funcionar 
+rpm -q --whatrequires lvm2
+
+
+INSTALAR UN PAQUETE
+
+1.- Instalar un paquete
+rpm -ivh /mnt/BaseIs.Packages/zsh-5.5.1-6.el8_1.2.x86_64.rpm
+
+2.- Actualizar un paquete 
+rpm -Uvh /mnt/BaseIs.Packages/zsh-5.5.1-6.el8_1.2.x86_64.rpm
+
+3.- Fresening Refrescar un paquete, rquiere que se encuentre instalada una version mas vieja
+rpm -Fvh mnt/AppStream/Packages/suhi-2.28.3-1.el8.x86_64.rpm
+
+4.- Sobreescribir un paquete, esta accion remplaza los archivos existentes asociados con el paquete de la misma version
+rpm -ivh --repacepkgs /mnt/BaseOs/Packages/zsh-5.5.1.6.el8_1.2.x86_64.rpm
+
+5.- Remover un paquete remueve el paquete y todos sus archivos y directorios relacionados
+rpm sushi -ve
+Esta instruccion verifica si el paquete que va a ser eliminado es una dependencia para que otro paquete pueda funcionar, en cuyo caso, rechaza la desinstalacion
+
+EXTAER ARVHIVOS DE UN PAQUETE INSTALABLE O BINARIO
+
+1.- Supongamos que desea recuperar el archivo nfs.conf ubicado en /etc primero identifique a que paquete instalable pertenece el archivo en cuestion.
+rpm -qf /etc/nfs.conf
+nfs-utils-2.3.3-51.el8.x86_64
+
+
+2.- Utilice el comando rpm2cpio para extraer (i) y para crear la estructura de directorios necesaria para la extracion
+cd/tmp/pruebaNFS
+rpm2cpio /mnt/BaseOs/Packages/nfs-utils-2.3.3-46.el8.x86_64.rpm | cpio -imd
+
+3.- Ejecute el comando find para localizar el archivo nfs.conf
+find ./ -name zshrc
+
+
+
+VALIDAR LA INTEGRIDAD DE UN PAQUETE
+1. Verifique la integridad del siguiente paquete
+rpm -K /mnt/BaseOs/Packages/zsh-5.5.1-6.el8_1.2.x86_64.rpm --nosignature
+
+2.- Verifique la credibilidad de un paquete, para ello primero importe las llaves GPG y despues verifique la firma con el parametro u opcion -K
+rpmkeys --import /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+rpmkeys -K /mnt/BaseOs/Packages/zsh-5.5.1-6.el8_1.2.x86_64.rpm
+
+
+VER LAS CLAVES GPG
+
+1.- Consultar las llaves rpm -q gpg-pubkey
+rpm -q gpg-pubkey
+
+2.- Consultar los detalles de la llave 
+rpm -qi (la llave)
+
+3.- verificar los atributos de un paquete
+rpm -V at
+
+
+GESTIONAR UN PAQUETE
+1.- Ejecute el comando ls sobre el directorio /mnt/AppStream/Packages/dcraw*
+ls /mnt/AppStream/Packages/dcraw*
+
+2.- Ejecute el comando rpm para verificar la integridad y credibilidad del paquete 
+rpmkeys -K /mnt/AppStream/Packages/dcraw-9.27.0-9.el8.x86_64.rpm
+
+3.- Instale el paquete
+rpm -ivh /mnt/AppStream/Packages/dcraw-9.27.0-9.el8.x86_64.rpm
+
+4.- Muestre la informacion basica sobre el paquete 
+rpm -qi dcraw
+
+5.- Muestre todos los archivos que contiene el paquete
+rpm -ql dcraw
+
+6.- Liste los archivos de documentacion que tiene el paquete 
+rpm -qd dcraw
+
+7.- Verifique los atributos de cada archivo en el paquete
+rpm -Vv dcraw
+
+8.- Elimine el paquete
+rpm -ve dcraw

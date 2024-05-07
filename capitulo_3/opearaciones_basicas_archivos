@@ -1,0 +1,17 @@
+# CAMBIAR LA FECHA DE UN ARCHIVO
+touch -d 2020-05-29 archivo1.txt
+# CHECAR TODA LA INFORMACION A DETALLE POR SI HAY ALGUNA INCONCISTENCIA EN LAS FECHAS
+stat archivo1.txt
+
+# CAMBIAR LA FECHA Y HORA DE MODIFICACION Y ACCESO DE UN ARCHIVO
+touch -d 2014-06-25T10:05 archivo1.txt
+touch -t 200901080715.30 archivo2.txt #LAS FRACCIONES (.30) SON LOS SEGUNDOS
+
+# ASIGNARLE LOS VALORES DE MOFICACION Y ACCESO QUE TIENE archivo2.txt sobre angel.txt
+touch -a -r archivo2.txt angel.txt
+touch -m -r archivo.txt angel.txt
+touch -a -m -r archivo2.txt angel.txt
+
+# CREAR ARCHIVO CON EL COMANTO cat
+ cat > ejemplo.txt (escribir texto y finalizar precionando CTRL +d)
+

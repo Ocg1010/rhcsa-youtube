@@ -1,0 +1,152 @@
+La forma en reset  password root, VDO con se hace con LVM  y no instalado (vdo kmod-kvdo), cambiar la longitud minima de la contraseña en /etc/security/pwquality.conf.  
+
+INSTALAR LOS PAQUETES PARA ADMINISTRACION SELINUX
+dnf install policycoreutils policycoreutils-pytyhon selinux-policy selinux-policy-targeted libselinux-utils setroubleshoot-server setools-console setools mctrans
+
+---------------------------------------------------------------------------------------
+MODIFIQUE EL CONTENTO DE SELINUX
+En este ejercicio usted creara un directorio llamado sedir1 en /tmp y un archivo llamado sefile1 dentro de este, verifique el contexto del directorio y del archivo, proceda a ssefile1 dentro de este, verifique el contexto del directorio y del archivo, proceda a cambiar el SELinux User y el type por user_u y public_content_t en ambos casos y verifique
+
+1.- Proceda a crear la jerarquia /tmp/sedir1/sefile1
+cd /tmp
+mkdir sedir1
+touch sedir1/sefile1
+
+2.- Determine el contento del nuevo directoio y del nuevo archivo
+ls -ldZ sedir1
+ls -lZ sedir1/sefile1
+
+3.- Modifique el usuaio de SELinux (-u) sobre el directorio por user_u y el tipo (-t) por public_content_t de forma (-R) con el comando chcon
+chcon -vu user_u -t public_content_t sedir1 -R
+
+4.- Valide el nuevo contexto
+ls -ldZ sedir1
+---------------------------------------------------------------------------------------
+AGREGUE Y APLIQUE UN FILE CONTEXT
+En este ejercicio usted agregara el contexto actual sobre dedir1 en la base de datos de la politica de SELinux para asegurarse de que un proceso de reetiquetado no va a regresar el directorio a su contexto anterior. Posteriormente va a cambiar el contexto del directorio por algunos valores aleatorios y por ultimo debe restaurar el contexto por defecto de manera recursiva a partir de la informacion almacenada en la base de datos de la politica
+
+1.- Determine el contexto actual
+ls -ldZ sedir1
+
+2.- Agregue el directorio de manera recursiva a la base de datos de politicas utilizando la herramienta semange y el subcomando fcontext
+semanage fcontext -a -s user_u -t public_content_t 'tmp/sedir1(/.*)?'
+el comando anterior agrega el contexto al directorio
+/etc/selinux/targeted/contexts/files/file_contets.local
+
+3.- Valide el contexto agregado con la opcion -l y -C en la base de datos de politicas
+semanage fcontext -C1 | grep sedir
+
+4.- Cambie el contexto actual sobre sefir1 por alguno aleatorio (staff_u/etc_t) con el comando chcon
+chcon -vu staff_u -t etc_t sefir1 -R
+
+5.- Confirmen los cambios con el comando ls
+ls -ldZ sedir1 ; ls -lZ sedir1/sefile1
+
+6.- Restaure el contexto del directorio sedir1 de manera recursiva tal como esta almacenado en la base de datos de politicas a traves del comando restorecon
+restorecon -Rv sedir1
+---------------------------------------------------------------------------------------
+AGREGUE Y ELIMINE UN PUERTO DE RED
+En este ejercicio usted agregara un puerto de red no estandar en la bd de politicas de SELinux para el servicio httpd, y confirme que se ha agregado dicho puerto, posteriormente elimine el puerto de la politica y verifique el correcto borrado
+
+1.- Liste (-l) los puertos disponibles para el servicio httpd de acuerdo a la informacion de la base de datos de poltiicas
+semanage port -l | grep ^httpd_port
+
+2.- Agregue (-a) el puerto 8010 con el tipo (-t) http_port_t y el portocolo (-p) tcp a la politica 
+semanage port -at http_port_t -p tcp 8010
+
+3.- Confirme que se agrego el puerto
+semanage port -l | grep ^httpd_port
+
+4.- Elimine (-d) el puerto 8010 de la politica y confirme
+semanage port -d -p tcp 8010
+----------------------------------------------------------------------------------------
+COPIE ARCHIVOS CON Y SIN CONTEXTO
+En este ejercicio usted creara un archivo llamado defile2 dentro de /tmp y muestre su contexto proceda a copiar este archivo al directorio /etc/default y observe el cambio en el cvontexto despues eliminen el archivo sefile2 de /etc/default y copielo nuevamente hacia el destino original asegurese de que el archivo recibe el mismo contexto de origen
+
+1.- Proceda a crear el archivo sefile2 en /tmp
+touch /tmpsefile2
+ls -lZ /tmp/sefile2
+
+2.- Copie este archivo en el directorio /etc/default y verifique el contexto nuevamente
+cp /tmp/sefile2 /etc/default
+ls -lZ /etc/defualt/sefile2
+
+3.- Elimine el archivo /etc/defualt/sefile2 y copielo de nuevo al directorio original pero utilice la siguiente opion --preserve=context
+rm /etc/default/sefile2
+cp /tmp/sefile2 /etc/default --preserve=contenxt
+
+4.- Liste el archivo y verifique que se ha preservado el contexto original usr_tmp_t
+ls -lZ /etc/default/sefile2
+---------------------------------------------------------------------------------------
+VER Y OCULTAR VALORES BOOLEANOS DE SELINUX
+En este ejercicio usted mostrara el estado actual de la directiva booleana nfs_export_all_rw, modifique su valor tempralmente y reinicie el sistema despues modifique su valor de forma persistente depues de iniciar nuevamente el sistema
+
+1.- Mostrar el valor actual del booleano nfs_export_all_rw utilice los siguientes 3 comandos getsebool sestatus y semanage
+getsebool -a | grep nfs_export_all_rw
+sestatus -b | grep nfs_export_all_rw
+semanage boolean -l | grep nfs_export_all_rw
+
+2.- Apague el valor de la directiva nfs_export_all_rw utilizando el comando setsebool coloque off o 0
+setsebool nfs_export_all_rw 0
+getsebool -a | grep nfs_export_all_rw
+
+3.- Reinicie el sistema y vuelva a ejecutar el comando getsebool
+getsebool -a | grep nfs_export_all_rw
+
+
+getsebool -a | grep nfs_export_all_rw
+sestatus -b | grep nfs_export_all_rw
+semanage boolean -l | grep nfs_export_all_rw
+
+2.- Apague el valor de la directiva nfs_export_all_rw utilizando el comando setsebool coloque off o 0
+setsebool nfs_export_all_rw 0
+getsebool -a | grep nfs_export_all_rw
+
+3.- Reinicie el sistema y vuelva a ejecutar el comando getsebool
+getsebool -a | grep nfs_export_all_rw
+
+getsebool -a | grep nfs_export_all_rw
+sestatus -b | grep nfs_export_all_rw
+semanage boolean -l | grep nfs_export_all_rw
+
+2.- Apague el valor de la directiva nfs_export_all_rw utilizando el comando setsebool coloque off o 0
+setsebool nfs_export_all_rw 0
+getsebool -a | grep nfs_export_all_rw
+
+3.- Reinicie el sistema y vuelva a ejecutar el comando getsebool
+getsebool -a | grep nfs_export_all_rw
+
+getsebool -a | grep nfs_export_all_rw
+sestatus -b | grep nfs_export_all_rw
+semanage boolean -l | grep nfs_export_all_rw
+
+2.- Apague el valor de la directiva nfs_export_all_rw utilizando el comando setsebool coloque off o 0
+setsebool nfs_export_all_rw 0
+getsebool -a | grep nfs_export_all_rw
+
+3.- Reinicie el sistema y vuelva a ejecutar el comando getsebool
+getsebool -a | grep nfs_export_all_rw
+
+getsebool -a | grep nfs_export_all_rw
+sestatus -b | grep nfs_export_all_rw
+semanage boolean -l | grep nfs_export_all_rw
+
+2.- Apague el valor de la directiva nfs_export_all_rw utilizando el comando setsebool coloque off o 0
+setsebool nfs_export_all_rw 0
+getsebool -a | grep nfs_export_all_rw
+
+3.- Reinicie el sistema y vuelva a ejecutar el comando getsebool
+getsebool -a | grep nfs_export_all_rw
+
+4.- Establezca el valor booleano de forma persistente (-P)
+setsebool -P nfs_export_all_rw 0
+
+5.- Verifique el nuevo valor utilizando getseebool sestatus o semanage 
+getsebool nfs_export_all_rw
+sestatus -b | grep nfs_export_all_rw
+semanage boolean -l | grep nfs_export_all_rw
+
+
+
+
+

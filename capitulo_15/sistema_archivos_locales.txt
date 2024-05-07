@@ -1,0 +1,236 @@
+1.-CREAR Y MONTAR LOS SISYEMAS EXT4, VFAT Y XFS
+
+En este ejercicio, usted creara 2 particiones de 100MB cada una  sobre el disco /dev/sda (256M) las inicializara por separado con los sistemas de archivos EXT4 y VFAT, establecera la persistencia utilizando el UUID y proceda a crear los puntos de montaje /ext4fs1 y /vfatfs1 para adjuntarlos a la estructura de directorios, verifique su disponibilidad y uso.
+
+Posteriormente utilizara el disco /dev/sdb y repita el proceso para establecer un sistema de archivos xfs y montarlo en /xfsfs1
+
+
+1.- Asigne la etiqueta msdos al disco /sdb a traves del comando parted
+parted /dev/sda mklabel msdos
+
+2.- Proceda a crear 2 particiones primarias de 100MB cada una en el disco sda
+parted /dev/sda mkpart primary 1 101M
+parted /dev/sda mkpart primary 102 201M
+
+3.- Inicialice la primera particion sda1 con el sistema de archivos ext4 
+mkfs -t ext4 /dev/sda1 
+
+4.- Inicialice la segunda particion /sda2 con el sistema de archivos vfat 
+mkfs -t vfat /dev/sda2 
+
+5.- Inicialice el disco completo sdb con el sistema de archivos xfs 
+mkfs.xfs /dev/sdb -f
+
+6.- Determine el UUID para los 3 sistemas de archivos 
+lsblk -f /dev/sda /dev/sdb 
+
+7.- Abra el archivo /etc/fstab vaya hacia el final del archivo y agregue las correpondientes  entradas para garantizar la persistencia del sistema de archivos a traves del UUID
+
+8.- Procesa a crear los respectivos directorios para vincular los puntos de montaje de cada uno de los sistemas de archivos
+mkdir /ext4fs1 /vfatfs1 /xfsfs1 
+
+9.- Procesa a montar los sistemas de archivos, este comando fallara si hay algun error en el archivo de configuracion /etc/fstab
+mount -a 
+
+10.- Verifique el montaje, disponibilidad y estatus de los 3 tipos de sistema de archivos df- hT
+
+
+
+
+
+2.- CREAR Y MONTAR UN SISTEMA DE ARCHIVOS XFS EN UN VDO VOLUME 
+En este ejercicio usted creara un Volumen VDO llamado vdo1 cuyo tamaño logico sera 16GB, sobre el disco -dev-sdg (cuyo tamaño fisico son 4GB), inicializara el volumen con el tipo de sistema de artchivos XFSl; creara el volumen de forma persistente y creara un punto de montaje de nombre /xfsvdo1, adjuntelo a la estructura de directorios y verifique su disponibilidad y uso.
+
+primero asegurese de que tiene insalado el software de VDO y que el servicio se encuentra iniciado
+
+systemctl enable --now vdo
+systemctl status vdo 
+
+1.- Proceda a crear un volumen VDO de nombre vdo1 sobre el disco sdg con un tamaño logico de 16GB y el tamaño de slab de 128MB
+vdo create --device /dev/sdg --name vdo1 --vdoSlabSize 128 --vdoLogicalSize 16GB
+
+2.- Liste el vdo volume 
+vdo list
+lsblk /dev/sdg 
+
+3.- Inicialice el vdo volume con el sistema de archivos xfs el archivo del volumen vdo es /dev/,apper/vdo1 utilice la opcion -f para forzar el borrado de cualquier particion o etiqueta anterior
+mkfs.xfs -f /dev/mapper/vdo1
+
+4.- Abra el archivo /etc/fstab, vaya al final y agregue la entrada para garantizar la persistencia en el sistema de archivos xfs utilizando el artchivo de dispositivo
+/dev/mapper/vdo /xfsvdo1 xfs x-systemd.requires=vdo.service 0 0 
+
+5.- Proceda a crear el punto de montaje
+mkdir /xfsvdo1
+
+6.- Proceda a montar el nuevo sistema de archivos la opcion mount -a realiza una prueba de validaciones el archivo fstab, para garantizar que el sistema de archivos se haya montado correctamente
+mount -a
+
+7.- Verifique el montaje y la disponibilidad de uso del sistema de archivos
+lsblk /dev/sdg
+df -hT /xfsvdo1
+
+
+
+
+
+
+
+3.- CREAR Y MONTAR UN SISTEMA DE ARCHIVOS EXT4 Y XFS EN UN LOGICAL VOLUME MANAGEMENT
+En este ejercicio, usted creara un volume group llamado vgfs compuesto por un physycial volume creado en una particion del disco /dev/sde1, (1GB de tamaño) el tamaño del PE para el volume group debera ser establecido en 16MB
+
+Posteriormente creara 2 logical volume de nombre ext4vol y xfsvol de 80MB de tamaño cada uno, inicialicelos con el sistema de archivos EXT4 y XFS, asegurece de definir la persistencia de ambos sistemas de archivos a traves de su logical volume device filenames.
+
+Finalmente creara 2 puntos de montaje llamados /ext4fs2 y /xfsfs2, monte el sistema de archivos y verifique su disponibilidad y uso.
+
+1.- Procesa a crear una particion de 200MB sobre el disco sde 
+parted /dev/sde mklabel msdos
+parted /dev/sde mkpart primary 1 201m
+
+2.- Inicialice la particion sde1 para que utilice LVM 
+pvcreate /dev/sde1
+
+3.- Proceda a crear un volume group con el nombre vgfs un tamaño de Physical Extend de 16MB utilizando el physical volume sde1 
+vgcreate 's 16 vgfs -dev-sde1
+
+4.- Proceda a crear 2 logical volumes ext4vol y xfsvol de tamaño 80MB respectivamente en el volume group vgfs
+lvcreate n ext4vol -L 80 vgfs
+lvcreate -n xfsvol -L 80 vgfs
+
+5.- Formate el logical volume ext4vol con el sistema de archivos ext4
+mkfs.ext4 /dev/vgfs/ext4vol
+
+6.- Formate el logical volume xfsvol con el sistema de archivos xfs mkfs.xfs /dev/vgfs/xfsvol
+
+7.- Abra el archivo /etc/fstab vaya hacia el final del archivo y agregue la siguiente entrada para garantizar la persistencia del sistema de archivos utilizando su device file
+/dev/vgfs/ext4vol /ext4fs2 ext4 defaults 0 0
+/dev/vgfs/xfsvol /xfsvol /xfsfs2 xfs defaults 0 0
+
+8.- Proceda a crear los puntos de montaje /ext4fs2 /xfsf2
+mkdir /ext4fs2 /xfsfs2
+
+9.- Activar la bandera lvm sobre el disco sde 
+parted /dev/sde1 set 1 lvm on
+
+10.- Proceda a montar los nuevos sistemas de archivos 
+mount -a
+
+11.- Verifique el punto de montaje y la disponibilidad  de uso con el comando lsblk
+lsblk /dev/sde
+
+
+
+
+
+
+4.- REDIMENSIONAR SISTEMAS DE ARCHIVOS 3XT4 Y XFS SE ENCUENTRAN COMO PARTE DE UN LVM 
+En este ejercicio, usted incrementara el tamaño del volume group vgfs que creo en el apartado anterior y le va a añadir todo el tamaño correspondiente al disco sdf (1GB).
+
+Tambien extendera el tamaño del logical volume ext4vol junto con el sistema de archivos que este contiene a un total de 10MB utilizando 2 comando por separado.
+
+Finalmente extendera el logical volume xfsvol junto con el sistema de archivos que este contiene a un total de 10MB utilizando un solo comando, por ultimo verifique los nuevos tamaños extendidos.
+
+1.- Inicialice el disco sdf (de 1GB) y agreguelo al volume group vgfs
+pvcreate /dev/sdf
+vgextend vgfs /dev/sdf
+
+2.- Confirme el nuevo tamaño para validar los cambios realizados
+vgs
+
+3.- Incremente el tamaño del logical volume ext4vol y el sistema de archivos en 10MB
+lvextend -L +10 /dev/vgfs/ext4vol
+fsadm resize /dev/vgfs/ext4vol
+
+el comando fsadm le indica al sistema de archivos que incremente hasta la maxica capacidad que tenga disponible el logical volume
+
+4.- Incremente el logical volume xfsvol y el sistema de archivos a 40MB
+lvresize -r -L +10 /dev/vgfs/xfsvol
+
+5.- Verifique la nueva extension de ambos logical volumes
+lvs | grep vol
+lvdisplay
+vgdisplay
+
+
+
+
+
+
+
+5.-CREAR MONTAR Y EXPANDIR UN SISTEMA DE ARCHIVOS XFS EN UN STRATIS VOLUME
+En este  ejercicio, usted creara un stratis pool llamado strpool y un sistema de archivos strfs2, cuyo tipo de sistema de archivos sera xfs, con lo cual podra utilizar el disco sdo de 5GB, usted mostrara informacion acerca del pool sistema de archivos y dispositivo utilizando, tambien va a expandir el pool para añadir otro disco duro de 1GB sdh y confirmar
+
+1.- Proceda a crear un pool denominado strpool en el disco sdi y verifique su creacion
+stratis pool create strpool /dev/sdi
+stratis pool list
+
+2.- Muestre el dispositivo de bloque usado en el pool
+stratis blockdev list strpool
+
+3.- Proceda a crear un sistema de archgivos llamado strfs2 en el pool y verifique su creacion
+stratis filesystem create strpool strfs2
+stratis filesystem list
+
+4.- Determine cual es el UUID para el filesystem que sera añadido al archivo fstab
+lsblk /stratis/strpool/strfs2 -o UUID
+
+5.- Abra el archivo /etrc/fstab vaya hasta el final del archivo y agregue la siguiente entrada para garantizar persistencia a traves del UUID
+UUID="xxxxxxxxxxxxxxxxxxxxxxxx" /strtfs2 xfs x-systemd.requires=stratisd.service 0 0
+
+6.- Crear el punto de montaje /strfs2
+mkdir /strfs2
+
+7.- Monte el nuevo sistema de archivos utilizando el comando mount
+mount -a 
+
+8.- Verifique el uso del pool 
+stratis pool list
+
+9.- Veirfique el uso del filesystem
+stratis filesystem list
+
+10.- Incremente el tamaño del pool añadiendo el disco sdh y verifique el incremento 
+stratis pool add-data strpool /dev/sdh
+stratis pool list
+
+
+
+
+
+
+6.- CREAR Y ACTIVAR EL SWAP EN UNA PARTICION Y EN UN LOGICAL VOLUME
+En este ejercicio usted creara una nueva area de swap en una particion llamada sdd1 con 40MB de espacion, para ello utilice el comando mkswap, ademas creara otra area swap con 140MB en un logical volume denominado swapvol dentro de un volume group denominado vgfs.
+
+Posteiormente añadira las entrada en el archivo -etc-fstab para ganar persistencia utilizara el UUID y la priority 1 para mapear la particion swap y en contraparte utilizara el device file y la priority 2 para mapear el logical volume.
+
+finalmente tendra que activar los dos elementos y utilizar las herramientas apropiadas para verificar que todo quede funcionando correctamente.
+
+1.- Utilice el subcomando print del comando parted sobre el disco sdd y el comando vgs sobre el volume group vgfs para determinar el espacio disponible para la nueva particion de 40MB asi como para el nuevo logical volume de 144MB
+parted /dev/sdd print
+vgs vgfs
+
+2.- Genere una nueva particion de 40MB de tamaño sdb1 utilice el comandoi parted
+parted /dev/sdd mklabel msdos
+parted /dev/sdd mkpart primary 1 41
+
+3.- Genere un nuevo logical volume swapvol de 144MB en el volume group vgs
+lvcreate -L 144 -n swapvol vgfs
+
+4.- Construya las estructuras swap en sdb3 y en swapvol
+mkswap /dev/sdb1 ; mkswap /dev/vgfs/swapvol
+
+5.- Edite el archivo fstab agregue las entradas correspondientes para ambas areas de swap con lo cual conseguira autoactivacion y persistencia obtenga el UUID para la particion swap (lsblk -f /dev/sdv3) y utilice el device file para el logical volume, especifique sus prioridades
+UUID=:xxxxxxxxxxxxxxxxxxxx: swap swap pri=1 0 0
+/dev/vgfs/swapvol swap swap pri=2 0 0 
+
+6.- Determine la cantidad actual de espacio swap disponible en el sistema 
+swapon
+
+7.- Active las nueva regiones swap 
+swap -a (este comando fallarta si hay un error de sintaxis en /etc/fstab)
+
+8.- Confirme la activacion de las regiones
+swapon 
+cat/proc/swaps
+
+9.- Ejecute el comando free para ver el incremento de la memoria swap 
+free -ht

@@ -1,0 +1,71 @@
+INSTALE EL SERVIDOR NFS Y COMPARTA UN RECURSO
+
+En este ejercicio usted creara un directorio denominado /common y lo exportara al servidor 2 en modo lectura/escritura, devera asegurarse de que el trafico NFS esta permitido en el firewall, y finalmente devera confirmar la exportacion del recurso
+
+1.- Instale el software correspondiente a NFS
+dnf install nfs-utils
+
+2.- Proceda a crear el directorio /comon que sera exportado como un share mkfir /common
+
+3.- Agregue permisos de lectura/escritura al directorio /common
+chmod 777 /common
+
+4.- Permita el trafico NFS a traves del firewall de forma persistente
+firewal-cmd --permanent --add-service nfs
+firewall-cmd --reload
+
+5.- Inicie y habilite el servicio NFS
+systemctl --now enable nfs-server
+
+6.- Verifique el estatus
+systemctl status nfs-server
+
+7.- Abra el directorio /etc/exports y agregue una entrada para otorgar acceso al sistema cliente sobre el directorio /common asigne tambine la opcion rw
+/common 192.168.100.184(rw)
+
+8.- Exporte la entrada definida en el archivo /etc/exports con el archivo /comon disponible para ser montado en el servidor2 en este caso el sistema cliente
+exportfs -av
+
+9.- Para desexportar el recurso compartido utilice el siguiente comando 
+exports -u 192.168.100.184:/common
+
+
+MONTE UN RECURSO COMPARTIDO EN EL SISTEMA CLIENTE
+En este ejercicio, usted montara el /common share que fue exportado en el ejercicio anterior, creara un punto de montaje denominado /local, despues proceda a montar el recurso (share) de forma manual y confirme su montaje. Agregara el recurso remoto compartido en el archivo /etc/fstab para ganar persistencia, volvera a montar el recurso y por ultimo, debe crear un nuevo archivo en el sistema cliente para verlo reflejado en el servidor.
+
+1.- Instale el software de NFS
+yum install nfs-utils
+
+2.- Proceda crear el directorio /local que funcionara como punto de montaje
+mkdir /local
+
+3.- Inicialice y habilite el servicio NFS
+systemctl --now enable nfs-server
+
+4.- Proceda a montar el recurso de manera manual
+mount 192.168.100.149:/common /local
+
+5.- Confirme que el recurso se monto correctamente
+mount | grep local
+df -h | grep local
+
+6.- Modifique el archivo /etc/fstab en el cliente para ganar persistencia
+192.168.100.149:/common /local nfs _netdev 0 0 
+
+7.- Desmonte el recurso de manera manual, y ejecute el comando mount -a para volver a montarlo y verificar que no exista errores de sintaxis en el archivo /etc/fstab
+umount /local
+mount -a
+
+8.- Confirme que el recurso se monto correctamente
+mount | grep local 
+df -h | grep local
+
+9.- Proceda a crear un archivo demominado nuevoNFS en /local y verifique su creacion
+touch /local/nuevoNFS.txt
+ls
+
+10.- Confirme la creacion del archivo en el servidor
+ls /common
+
+
+

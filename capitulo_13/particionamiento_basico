@@ -1,0 +1,105 @@
+ASIGNAR UNA PARTICIO PARA EL MASTER BOOT RECORD
+1.- Genere una particion nueva de tipo ms-dos sobre el disco /dev/sda de 100MB de capacidad la cual realizara la funcion de Master Boot Record utilice la herramienta parted
+parted /dev/sda print
+
+2.- Asigne la etiqueta msdos como nombre para el disco sda y confirme 
+parted /dev/sda mklabel msdos
+parted /dev/sda print
+
+3.- Genere una nueva particion en el disco sda de tamaño de 100MB comenzando por el 1
+parted /dev/sda mkpart primary 1 101m
+parted /dev/sda print
+
+4.- Confirme que se creo la particion 
+lsblk
+
+5.- Verifique el archivo /proc/partitions tambien
+cat /proc/partitions | grep sda
+
+
+ELIMINAR LA PARTICION MBR
+1.- Ejecute el siguiente comando para eliminar la particion numero 1 y confirme
+parted /dev/sda rm 1
+parted /dev/sda print
+cat /proc/partitions | grep sda
+
+
+
+CREAR UNA PARTICION GPT
+1.- Genere una nueva particion de tipo GPT con la herramienta gdisk sobre sdb gdisk /dev/sdb
+
+2.- Consulte la ayuda
+help
+
+3.- Crear uan nueva tabla de particiones vacia de tipo GPT con la opcion 'o'
+
+4.- Utilice la opcion "p" para imprimir la tabla de particiones
+
+5.- Genere la primera particion de tamaño 200MB comenzando por el sector por defecto y con el tipo de sistema de archivos de linux por defecto utilice la opcion 'n'
+verifique con la opcion 'p'
+
+6.- Utilice la opcion "w" para escribir los cambios y confirme con "y"
+
+7.- Verificar la creacion de la particion de caulquiera de los sisuientes grep sdb /proc/partitions
+lsblk /dev/sdb
+
+
+
+ELIMINAR LA PARTICION GPT
+1.- Ejecute los siguientes comandos gdisk /dev/sdb
+d1
+w
+grep sdb /proc/partitios
+lsblk /dev/sdb
+
+NOTAS: Con un disco cuyo tamaño real es de 4GB la caracteristica de thin provising permite crear un volumen VDO de hasta 16GB lo que equivale a incrementar la capacidad real des disco hasta 4 veces mas de su tamaño original.
+
+
+
+OPTIMIZAR EL ALMACENAMIENTO CON VIRTUAL DATA OPTIMIZER
+1.- Instale los pquetes vdo y kmod-kvdo
+dnf install kmod-kvdo 
+
+2.- Inicie y habilite el servicio vdo
+systemctl enable --now vdo
+systemctl status vdo
+
+CREAR UN VOLUMEN VDO1.- Instale los pquetes vdo y kmod-kvdo
+dnf install kmod-kvdo 
+
+2.- Inicie y habilite el servicio vdo
+systemctl enable --now vdo
+systemctl status vdo
+
+CREAR UN VOLUMEN VDO
+1.- Crear un volumen VDO con el nombre (--name) vdo-vol1 sobre el disco (--device) /dev/sdg (4G)
+vdo create --name vdo --devide /dev/sdg --vdoLogicalSize 16G --vdoSlabSize 128
+
+2.- Listar el nuevo volumen creado
+vdo list
+lsblk /dev/sdg
+
+3.- Mostrar el porcentaje de uso del volumen
+vdostats --hu
+
+4.- Mostrar informacion estadistica detallada para el volumen
+vdostats --verbose
+
+5.- Mostrar mas informacion estadistica especifica del volumen
+vdo status --name vdo-vol1
+
+6.- Mostrar el estatus de activacion de las caracteristicas compression y de-duplication
+vdo status --name vdo-vol1 | grep -i compression
+vdo status --name vdo-vol1 | grep -i deduplication
+
+
+
+ELIMINAR UN VOLUMEN VDO
+1.- Verifica que el voluen vdo-vol1 efectivamente exista
+vdo list
+lsblk /dev/sde
+
+2.- Eliminar el volumen vdo especificando su nombre y confirme 
+vdo remove --name vdo-vol1
+vdo list
+lsblk /dev/sde
