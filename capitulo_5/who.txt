@@ -1,0 +1,8 @@
+# EL COMANDO who MUESTRA INFORMACION QUE SE ENCUENTRA ALMACENADA EN EL ARCHIVO /run/utmp
+
+# NOS MUESTRA: 
+1.- Nombre de usuario
+2.- Dispositivo en el que inicio sesión
+3.- Fecha de inicio de sesión
+4.- Hora de inicio de sesión
+5.- Tipo de sesión: grafica(:0), remote direccion ip, o local por consola ttu/pts

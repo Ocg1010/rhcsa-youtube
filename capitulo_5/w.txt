@@ -1,0 +1,9 @@
+################## COMANDO w (WHAT) ##########################
+# DEVUELVE:
+Tiempo activo
+Background jobs, procesos en segundo plano JCPU
+Tiempo de CPU utilizado por el proceso actual PCPU
+Actividad actual
+Hora actual y tiempo que lleva encendido
+Cantidad de usuarios autenticados
+Carga promedio deo procesador durante los ultimos 1 5 y 15 minutos

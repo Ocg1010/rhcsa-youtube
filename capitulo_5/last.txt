@@ -1,0 +1,17 @@
+################# HISTORIAL DE INICIOS DE SESION EXITOSOS Y REINICIOS ######################
+DEVUELVE:
+Inicios de sesión exitosos y cierres de sesión exitosos
+Duración tiempo y lugar de la conexión del usuario
+Inicios de sesión fallidos
+
+# MOSTRAR LOS INICIOS DE SESION EXITOSOS /var/log/wtmp
+last
+
+# MOSTRAR LOS INTENTOS FALLIDOS DE INICIO DE SESION /var/log/btmp
+lastb 
+
+# REPORTAR LA EVIDENCIA MAS RECIENTE DE INICIO DE SESION
+lastlog
+
+# MOSTRAR LOS ULTIMOS REINICIOS DE SISTEMA
+last reboot

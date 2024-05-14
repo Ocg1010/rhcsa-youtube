@@ -1,0 +1,22 @@
+#################### PARAMETROS CONFIGURACION DE USUARIOS ################
+
+# MIRAR LOS PARAMETROS DEL ARCHIVO login.defs
+useradd -D
+
+# MOSTRAR LAS DIRECTIVAS QUE ESTAN HABILITADAS EN EL ARCHIVOS /etc/login.defs
+grep -v ^# /etc/logj.defs | gre- v ^$
+
+
+# CREAR UN USUARIO CON UN UID DE 1010 SU DIRECTORIO EN /usr/focahome Y UNA SHELL -s /bin/sh 
+useradd -u 1010 -d /usr/focahome -s /bin/sh foca
+
+
+######################### MODIFICAR UNA CUENTA DE USUARIO ####################
+# MODIFICAR EL NOMBRE DE USUARIO DE delfin POR delfin_nuevo, MODIFICAR EL UID POR EL NUMERO 2000, MODIFICAR EL HOME DIRECTORY POR /home/delfin_nuevo Y MODIFICAR EL LOGIN SHELL POR nologin
+usermod -l delfin_nuevo -u 2000 -m -d /home/delfin_nuevo -s /sbin/nologin delfin
+
+# ELIMINAR USUARIO CON SU HOME Y DIRECTORIO 
+userdel -r delfin_nuevo
+
+# MANDAR UN MENSAJE A USUARIOS nologin
+vim nologin.txt
