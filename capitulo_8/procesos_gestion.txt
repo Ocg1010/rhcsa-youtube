@@ -1,0 +1,45 @@
+# GENERAR UN REPORTE DETALLADO CON LAS OPCIONES -e (every) -f (full format) -F (extra full format) 
+
+# MOSTRAR LA SALIDA DEL COMANDO ps EN OTRO ORDEN
+ps -o comm,pid,ppid,user
+
+# MOSTRAR CUANTAS VECES SE ESTA EJECUTANDO UN PROCESO EN ESPECIFICO
+-C (Command list)
+ps -C yes
+
+# EL COMANDO pidof PASA COMO ARGUMENTO EL NOMBRE DE UN PROCESO PARA IDENTIFICAR SU NUMERO DE ID
+pidof rsyslogd
+pidof gnome-shell
+pidof systemd
+
+# VER LOS PROCESOS DE UN USUARIO O GRUPO
+ps -U edge
+ps -G edge
+
+# LISTAR LOS PROCESO PARA AVERIGUAR EL VALOR DE PRIORIDAD (PR) Y EL VALOR NICENESS (NI)
+ps -efl | less
+
+# VER VALOR POR DEFECTO NICENESS EN EL SISTEMA
+nice
+
+# CAMBIAR EL VALOR NICENESS ANTES DE LA EJECUCION
+nice -n -10 top
+
+# MODIFICAR EL VALOR NICENESS EN TIMEPO DE EJECUCION
+renice 5 PID
+
+# LISTAR TODAS LAS SEÑALES 
+kill -l
+
+# MATAR UN PROCESO A TRAVES DEL NOMBRE
+ps -el | grep crond
+pkill crond
+
+# MATAR EL PROCESO MEDIANTE SU PID
+kill $(pidof crond)
+
+# OTRAS MANERAS DE MATAR UN PROCESO
+pkill -9 crond
+pkill -s SIGKILL crond
+kill -9 $(pgrep crond)
+killall vim

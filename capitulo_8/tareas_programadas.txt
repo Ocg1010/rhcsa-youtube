@@ -1,0 +1,18 @@
+# VER LA FORMA CORRECTA DE INDICAR LA FECHA EN LA HERRAMIENTA at
+date +%D
+date +%H:%M
+
+# CREAR UN at job
+at 10:02am -5/20/24
+date &> /tmp/date.txt
+presionar control + d para concluir
+
+at 10:03am 05/06/24
+who &> /tmp/conectados.txt
+
+# LISTAR at jobs 
+at -l
+
+# BORRAR at jobs
+at -d NUM
+atrm NUM

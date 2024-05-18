@@ -10,7 +10,7 @@ name=BaseOs
 baseurl=file://mnt/BaseOS
 gpgcheck=0
 
-[[AppStream]
+[AppStream]
 name=AppStream
 baseurl=file://mnt/AppStream
 gpgcheck=0
@@ -40,8 +40,7 @@ sudo dnf list CUnit
 10.- Para listar todos los paquetes instalados cuyo nombre comience con la cadena de texto gnome
 sudo dnf list installed gnome*
 
-
-
+###############################################################################
 
 INSTALAR Y ACTUALIZAR PAQUETES
 1.- Procesa a instalar o en su caso actualizar un paquete denominado ypbind
@@ -58,8 +57,7 @@ sudo dnf update autofs*
 4.- Para actualizar todos los paquetes instalados a la version mas reciente disponible
 sudo dnf update
 
-
-
+########################################################################
 
 REMOVER PAQUETES
 
@@ -89,8 +87,7 @@ sudo dnf remove cifs-utils
 7.- Confirme la remocion del paquete
 sudo dnf list cifs-utils
 
-
-
+#################################################################################
 
 DETERMINE EL PROVEDOR Y BUSQUE METADATOS ACERCA DEL PAQUETE
 1.- Para buscar por aquellos paquetes que contengan un archivo especifico como /etc/passwd utilice el subcomando provides o whatprovides del comando dnf
@@ -109,7 +106,7 @@ GESTION DE GRUPOS DE PAQUETES
 sudo dnf group list
 
 2.- Para listar la cantidad de grupos de paquetes instalados y grupos de paquetes disponibles para instalacion
-sudo dnf groyp summary
+sudo dnf group summary
 
 3.- Para listar todos los grupos de paquetes instalados y disponibles en el sistema incluyendo aquellos que se encuentran ocultos
 sudo dnf groyp list hidden
@@ -117,8 +114,7 @@ sudo dnf groyp list hidden
 4.- Para listar todos los grupos de paquetes que pertenecen a un grupo en especifico por ejemplo el grupo Base
 sudo dnf group info Base
 
-
-
+#####################################################################
 
 INSTALAR Y ACTUALIZAR GRUPOS DE PAQUETES
 1.- Proceda a consultar si el grupo de paquetes denominado smart card support se encuentra instalado o bien esta disponible para instalacion
@@ -132,7 +128,7 @@ sudo dnf groupinstall "smart card support"
 sudo dnf groupupdate "smart card support"
 sudo dnf group list installed
 
-
+########################################################################
 
 DESINSTALAR GRUPOS DE PAQUETES
 1.- Eliminar el grupo de paquetes smart card support
@@ -141,7 +137,7 @@ sudo dnf group remove 'smart card suppot'
 2.- Confirme la remocion del grupo de paquetes
 sudo dnf group list installed
 
-
+############################################################################
 
 GESTION DE MODULOS
 1.- Listar los modulos disponibles e instalados
@@ -159,6 +155,7 @@ sudo dnf module list --enabled
 sudo dnf module list --installed
 sudo dnf module list --disabled
 
+#############################################################################
 
 GESTIONAR MODULOS
 1.- Verifique si el modulo postgresql ya esta instalado
@@ -179,7 +176,7 @@ sudo dnf module remove postgresql:10
 6.- Confirme la remocion del moduleProfile
 sudo dnf module info postgresql:10
 
-
+###############################################################################3
 
 CAMBIAR UN MODULE STREAM
 1.- Procesa a cambiar la version de un modulo perl por una version mas antigua para ello verifique el estado actual de todos los streams de perl
