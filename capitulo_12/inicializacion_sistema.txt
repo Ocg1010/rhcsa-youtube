@@ -1,0 +1,96 @@
+SYSTEMD UNIDADES Y TARGETS
+# LISTAR TODAS LAS UNIDADES QUE SE ENCUENTRAN ACTUALMENTE CARGADAS EN MEMORIA JUNTO CON SU ESTATUS ACTUAL Y UNA DESCRIPCIÓN 
+systemctl
+
+# LISTAR TODAS LAS UNIDADES DE TIPO SOCKET QUE SE ENCUENTREN ACTIVAS O INACTIVAS  
+systemctl -t socket --all
+
+# LISTAR TODOS LOS ARCHIOS DE UNIDAD INSTALADOS EN EL SISTEMA Y SU ESTADO ACTUAL  
+systemctl list-unit-files
+
+# LISTAR TODAS LAS UNIDADES QUE FALLARON AL ARRANCAR EN EL ULTIMO INICIO DE SISTEMA 
+systemctl --failed
+
+# LISTAR LA JERARQUIA DE TODAS LAS DEPENDENCIAS (UNIDADES DE LA DIRECTIVA WANTS Y REQUIERE PARA EL TARGET POR DEFECTO ACTUAL)
+systemctl list-dependencies
+
+# LISTAR TODAS LAS DEPEDENCIAS (WANTS Y REQUIRE) PARA LA UNIDAD EN ESPECIFICO  
+systemctl list-dependencies crond.service
+
+
+GESTION DE UNIDADES DE TIPO SERVICE 
+# VERIFICAR EL ESTADO OPERACIONAL ACTUAL Y OTROS DETALLES DE LA UNIDAD crond.service 
+systemctl status crond.service
+systemctl status crond
+
+# DESHABILITAR LA UNIDAD crond.service EN EL SIGUIENTE REINICIO 
+systtemctl disable crond
+
+# PARA VOLVER HABILITARLA DESDE EL ARRANQUE 
+systemctl enable crond
+
+# VERIFICAR SI LA UNIDAD crond.service SE ENCUENTRA HABILITADA PARA EL SIGUINTE REINICIO  
+systemctl is-enabled crond.service
+
+# VERIFICAR SI EL SERVICIO crond ESTA EN EJECUCIÓN 
+systemctl is-active crond
+
+# DETENER Y REINICIAR EL SERVICIO 
+systemctl stop crond ; systemctl start crond
+systemctl restrart crond
+
+# MOSTRAR LOS DETALLES DEL SERVICIO crond 
+systemctl show crond
+
+# PROHIBIR O EVITAR QUE EL SERVICIO crond SEA HABILITADO O DESHABILITADO (ENMASCARAR) 
+systemctl mask crond
+systemctl enable crond
+
+# REVERTIR EL EFECTO DE ENMASCARAR crond 
+systemctl unmask crond
+
+
+GESTION DE UNIDADES TIPO TARGET
+# MIRAR QUE UNIDADES DE TIPO TARGET ESTAN ACTUALMENTE CARGADAS EN MEMORIA Y ACTIVADAS O EN EJECUCIÓN 
+systemctl -t target
+
+# CONSULTAR CUAL ES EL TARGET POR DEFECTO ACTUAL 
+systemctl get-default
+
+# CAMBIAR EL TARGET POR DEFECTO 
+systemctl set-default multi-user
+
+# REGRESAR AL TARGET ANTERIOR 
+systemctl set-default graphical
+
+
+NAVEGACION DENTRO DE TARGETS ESPECIFICOS (NO REQUIERE REINICIO)
+
+# CAMBIAR ENTRE EL TARGET ACTUAL AL TARGET multi-user
+systemctl isolate multi-user
+
+# REGRESAR AL TARGET ANTEIOR 
+systemctl isolate graphical
+
+# APAGAR EL SISTEMA  
+systemctl poweroff
+
+# REINICIAR EL SISTEMA
+systemctl reboot
+
+# A DONDE APUNTAN LOS COMANDOS HALT, POWEROFF Y REBOOT 
+ls -l /usr/sbin/halt /usr/sbin/poweroff /usr/sbin/reboot
+
+
+LOS COMANDOS HALT, POWEROFF Y REBOOT ESTÁN DISPONIBLES EN RHEL8 SOLO POR RAZONES DE COMPATIBILIDAD, SE RECOMIENDA USAR SIEMPRE SYSTEMCTL PARA CAMBIAR ENTRE LOS DIFERENTES ESTADOS DEL SISTEMA 
+
+CON ESTOS TARGESTS TAMBIEN SE PUEDE REALIZAR :
+ 
+-Enviar un mensaje de brodcast a todos los usuarios logueados
+-Bloquear todos los intentos de inicio de sesion
+-Esperar una cantidad de tiempo especifica para que los usuarios puedan terminar su trabajo y cerrar sesion
+-Detener los servicios y cambiar el target por defecto
+
+
+
+
